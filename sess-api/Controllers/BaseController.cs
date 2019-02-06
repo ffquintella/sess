@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using NLog;
 
 namespace sess_api.Controllers
 {
@@ -8,7 +9,7 @@ namespace sess_api.Controllers
     {
         protected string requesterID { get; set; }
 
-        protected ILogger logger;
+        protected Logger logger;
 
         protected IConfiguration configuration;
 
