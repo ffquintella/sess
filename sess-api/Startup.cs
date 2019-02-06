@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Authentication;
+using sess_api.Tools;
 
 namespace sess_api
 {
@@ -20,6 +21,10 @@ namespace sess_api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            var VarM = VarManager.Instance;
+            
+            VarM.Vars.Add("RedisConfig", configuration.GetSection("redis"));
         }
 
         public IConfiguration Configuration { get; }
