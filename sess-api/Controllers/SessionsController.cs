@@ -52,12 +52,9 @@ namespace sess_api.Controllers
             }
 
             var sMan = SessionManager.Instance;
-            
-            var token = new SessionToken();
 
-            token.Ttl = 123;
-            token.Hash = "HADSFASHDFasf";
-
+            var token = sMan.CreateNewSession(request);
+        
             return Created(this.Request.GetEncodedUrl(), token);
             //return token;
         }
