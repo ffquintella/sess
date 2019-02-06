@@ -1,9 +1,9 @@
-using System;
 using System.IO;
 using NLog;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using domain.Security;
+using sess_api.Tools;
 
 namespace sess_api.Security
 {
@@ -12,14 +12,36 @@ namespace sess_api.Security
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
+        private static List<ApiKey> keys
+        {
+            get
+            {
+
+                var VarsM = VarManager.Instance;
+
+                if (VarsM.Vars.ContainsKey("ApiKeys"))
+                {
+                    return (List<ApiKey>) VarsM.Vars["ApiKeys"];
+                }
+                else
+                {
+                    var json = File.ReadAllText("security.json");
+
+                    logger.Debug("Json File:" + json);
+                    
+                    var apiKeys = JsonConvert.DeserializeObject<List<ApiKey>>(json);
+                    
+                    VarsM.Vars.Add("ApiKeys", apiKeys);
+
+                    return apiKeys;
+                }
+                
+                
+            }
+        }
+
         public static ApiKey FindBySecretKey(string secretKey)
         {
-
-            string json = File.ReadAllText("security.json");
-
-            logger.Debug("Json File:" + json);
-
-            List<ApiKey> keys = JsonConvert.DeserializeObject<List<ApiKey>>(json);
 
             foreach (ApiKey key in keys)
             {
@@ -31,12 +53,6 @@ namespace sess_api.Security
 
         public static ApiKey Find(string keyID)
         {
-
-            string json = File.ReadAllText("security.json");
-
-            logger.Debug("Json File:" + json);
-
-            List<ApiKey> keys = JsonConvert.DeserializeObject<List<ApiKey>>(json);
 
             foreach (ApiKey key in keys)
             {
