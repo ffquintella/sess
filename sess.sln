@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sess-api", "sess-api\sess-api.csproj", "{0197071C-D008-4553-943C-0708D3FC1D9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "domain", "domain\domain.csproj", "{86AF8F06-3AF2-449D-99EF-B6D1160A5C3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{0197071C-D008-4553-943C-0708D3FC1D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0197071C-D008-4553-943C-0708D3FC1D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0197071C-D008-4553-943C-0708D3FC1D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86AF8F06-3AF2-449D-99EF-B6D1160A5C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86AF8F06-3AF2-449D-99EF-B6D1160A5C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86AF8F06-3AF2-449D-99EF-B6D1160A5C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86AF8F06-3AF2-449D-99EF-B6D1160A5C3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
