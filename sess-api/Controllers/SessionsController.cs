@@ -72,7 +72,7 @@ namespace sess_api.Controllers
             return Ok();
         }
 
-        // GET api/sessions
+        // POST api/sessions
         [HttpPost]
         public ActionResult<SessionToken> Get([FromBody] SessionRequest request)
         {
@@ -89,7 +89,7 @@ namespace sess_api.Controllers
             //return token;
         }
 
-
+        // DELETE api/sessions/app1/414E4C2F470B22AF15400B9874A78744
         [HttpDelete("{app}/{hash}")]
         public ActionResult Delete(string app, string hash)
         {

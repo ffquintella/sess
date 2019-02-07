@@ -11,20 +11,31 @@ namespace sess_api.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class InfosController : ControllerBase
     {
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] {"value1", "value2"};
+            return new string[] {"about", "author"};
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<string> Get(string id)
         {
-            return "value";
+            switch (id)
+            {
+                case "about":
+                    return "Session Controller API";
+                    break;
+                case "author":
+                    return "Felipe Quintella";
+                    break;
+                default:
+                    return "Value invalid";
+                    break;
+            }
         }
 
         // POST api/values
