@@ -24,14 +24,35 @@ namespace sess_api.Controllers
         {
             this.logger = LogManager.GetCurrentClassLogger();
         }
-        
-        // GET api/sessions/52323
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(string id)
+
+        // GET api/sessions/app1
+        [HttpGet("{app}")]
+        public ActionResult<SessionToken[]> Get(string app)
         {
-            return "value";
+
+            var sMan = SessionManager.Instance;
+
+            var token = sMan.FindAppTokens(app);
+
+            if (token == null) return NotFound();
+
+            return token;
         }
-        
+
+        // GET api/sessions/app1/414E4C2F470B22AF15400B9874A78744
+        [HttpGet("{app}/{hash}")]
+        public ActionResult<SessionToken> Get(string app, string hash)
+        {
+
+            var sMan = SessionManager.Instance;
+
+            var token = sMan.FindToken(app, hash);
+
+            if (token == null) return NotFound();
+
+            return token;
+        }
+
         // GET api/sessions
         [HttpPost]
         public ActionResult<SessionToken> Get([FromBody] SessionRequest request)

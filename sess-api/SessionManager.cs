@@ -1,12 +1,11 @@
 using System;
-using System.Linq;
 using domain;
 using NLog;
 using sess_api.Tools;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
-
+using System.Collections.Generic;
 
 namespace sess_api
 {
@@ -26,8 +25,12 @@ namespace sess_api
 
         private IDatabase redis_db;
 
-        protected int defaultTtl;
+        private int redisDbNum;
 
+        private string[] redisServers;
+
+        protected int defaultTtl;
+        
         public int DefaultTtl { get { return defaultTtl; } }
         
         private SessionManager()
@@ -42,18 +45,18 @@ namespace sess_api
 
             defaultTtl = parameters.GetSection("defaultTTL").Get<int>();
 
-            var servers = reConf.GetSection("servers").Get<string[]>();
+            redisServers = reConf.GetSection("servers").Get<string[]>();
 
-            var database = reConf.GetSection("database").Get<int>();
+            redisDbNum = reConf.GetSection("database").Get<int>();
             
-            logger.Debug("Redis servers: {redis}", JsonConvert.SerializeObject(servers));
-            logger.Debug("Redis database: {db}", database);
+            logger.Debug("Redis servers: {redis}", JsonConvert.SerializeObject(redisServers));
+            logger.Debug("Redis database: {db}", redisDbNum);
 
             try
             {
-                redis = ConnectionMultiplexer.Connect(string.Join(",", servers));
+                redis = ConnectionMultiplexer.Connect(string.Join(",", redisServers));
 
-                redis_db = redis.GetDatabase(database);
+                redis_db = redis.GetDatabase(redisDbNum);
                 
                 logger.Debug("Connected to redis servers.");
             }
@@ -93,7 +96,60 @@ namespace sess_api
             return token;
 
         }
-        
-        
+
+        public SessionToken[] FindAppTokens(string app)
+        {
+            var tokens = new List<SessionToken>();
+
+            // verify if the token exists in redis
+
+
+            var server = redis.GetServer(redisServers[0]);
+
+
+            var keys = server.Keys(redisDbNum, app + ":*");
+
+            if(keys != null)
+            {
+                foreach(var key in keys)
+                {
+                    //var val = redis_db.StringGet(key);
+
+                    var token = new SessionToken();
+
+                    token.Hash = key.ToString().Split(':')[1];
+                    token.Ttl = (int)redis_db.KeyTimeToLive(key).Value.TotalSeconds;
+
+                    tokens.Add(token);
+
+                }
+            }
+
+            return tokens.ToArray();
+        }
+
+        public SessionData FindToken(string app, string sessionHash)
+        {
+            SessionData sdata = null;
+
+            // verify if the token exists in redis
+
+            var key = app + ":" + sessionHash;
+                            
+            var keyValue = redis_db.StringGet(key);
+
+            if(!keyValue.IsNull)
+            {
+                sdata = new SessionData();
+                sdata.Hash = sessionHash;
+                sdata.Data = keyValue.ToString();
+                sdata.Ttl = (int)redis_db.KeyTimeToLive(key).Value.TotalSeconds;
+                
+            }
+
+            return sdata;
+        }
+
+
     }
 }
