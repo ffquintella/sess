@@ -25,6 +25,10 @@ namespace sess_api
         private ConnectionMultiplexer redis;
 
         private IDatabase redis_db;
+
+        protected int defaultTtl;
+
+        public int DefaultTtl { get { return defaultTtl; } }
         
         private SessionManager()
         {
@@ -33,6 +37,10 @@ namespace sess_api
             //var config = ConfigurationManager<>
 
             var reConf = (IConfigurationSection) VarManager.Instance.Vars["RedisConfig"];
+
+            var parameters = (IConfigurationSection)VarManager.Instance.Vars["Parameters"];
+
+            defaultTtl = parameters.GetSection("defaultTTL").Get<int>();
 
             var servers = reConf.GetSection("servers").Get<string[]>();
 
@@ -67,8 +75,20 @@ namespace sess_api
             var token = new SessionToken();
             
             token.Hash = Security.HashHelper.getMD5Hash(tokenData);
-            
-            //redis_db.StringSet("teste","teste", TimeSpan.FromSeconds(20));
+
+            var rkey = request.App + ":" + token.Hash;
+
+            string val;
+
+            if (request.JsonSessionData != null) val = request.JsonSessionData;
+            else val = "";
+
+            int ttl = DefaultTtl;
+            if (request.Timeout != 0 && request.Timeout != null) ttl = request.Timeout;
+
+            redis_db.StringSet(rkey,val, TimeSpan.FromSeconds(ttl));
+
+            token.Ttl = ttl;
 
             return token;
 

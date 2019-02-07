@@ -25,6 +25,7 @@ namespace sess_api
             var VarM = VarManager.Instance;
             
             VarM.Vars.Add("RedisConfig", configuration.GetSection("redis"));
+            VarM.Vars.Add("Parameters", configuration.GetSection("parameters"));
         }
 
         public IConfiguration Configuration { get; }
