@@ -23,7 +23,7 @@ namespace sess_api
 
         private ConnectionMultiplexer redis;
 
-        private IDatabase redis_db;
+        private IDatabase redisDb;
 
         private int redisDbNum;
 
@@ -56,7 +56,7 @@ namespace sess_api
             {
                 redis = ConnectionMultiplexer.Connect(string.Join(",", redisServers));
 
-                redis_db = redis.GetDatabase(redisDbNum);
+                redisDb = redis.GetDatabase(redisDbNum);
                 
                 logger.Debug("Connected to redis servers.");
             }
@@ -89,7 +89,7 @@ namespace sess_api
             int ttl = DefaultTtl;
             if (request.Timeout != 0 && request.Timeout != null) ttl = request.Timeout;
 
-            redis_db.StringSet(rkey,val, TimeSpan.FromSeconds(ttl));
+            redisDb.StringSet(rkey,val, TimeSpan.FromSeconds(ttl));
 
             token.Ttl = ttl;
 
@@ -113,12 +113,12 @@ namespace sess_api
             {
                 foreach(var key in keys)
                 {
-                    //var val = redis_db.StringGet(key);
+                    //var val = redisDb.StringGet(key);
 
                     var token = new SessionToken();
 
                     token.Hash = key.ToString().Split(':')[1];
-                    token.Ttl = (int)redis_db.KeyTimeToLive(key).Value.TotalSeconds;
+                    token.Ttl = (int)redisDb.KeyTimeToLive(key).Value.TotalSeconds;
 
                     tokens.Add(token);
 
@@ -136,20 +136,32 @@ namespace sess_api
 
             var key = app + ":" + sessionHash;
                             
-            var keyValue = redis_db.StringGet(key);
+            var keyValue = redisDb.StringGet(key);
 
             if(!keyValue.IsNull)
             {
                 sdata = new SessionData();
                 sdata.Hash = sessionHash;
                 sdata.Data = keyValue.ToString();
-                sdata.Ttl = (int)redis_db.KeyTimeToLive(key).Value.TotalSeconds;
-                
+                sdata.Ttl = (int)redisDb.KeyTimeToLive(key).Value.TotalSeconds;
             }
 
             return sdata;
         }
 
+
+        public bool SessionExists(string app, string sessionHash, bool renew = true)
+        {
+            var key = app + ":" + sessionHash;
+            var resp = redisDb.KeyExists(key);
+
+            if (renew)
+            {
+                redisDb.KeyExpire(key, TimeSpan.FromSeconds(DefaultTtl));
+            }
+
+            return resp;
+        }
 
     }
 }

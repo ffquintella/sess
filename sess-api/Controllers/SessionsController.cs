@@ -41,9 +41,8 @@ namespace sess_api.Controllers
 
         // GET api/sessions/app1/414E4C2F470B22AF15400B9874A78744
         [HttpGet("{app}/{hash}")]
-        public ActionResult<SessionToken> Get(string app, string hash)
+        public ActionResult<SessionToken> GetHash(string app, string hash)
         {
-
             var sMan = SessionManager.Instance;
 
             var token = sMan.FindToken(app, hash);
@@ -51,6 +50,19 @@ namespace sess_api.Controllers
             if (token == null) return NotFound();
 
             return token;
+        }
+
+        // GET api/sessions/app1/414E4C2F470B22AF15400B9874A78744/exists
+        [HttpGet("{app}/{hash}/exists")]
+        public ActionResult Exists(string app, string hash, [FromQuery] bool renew = true)
+        {
+            var sMan = SessionManager.Instance;
+
+            var exists = sMan.SessionExists(app, hash, renew);
+
+            if (!exists) return NotFound();
+
+            return Ok();
         }
 
         // GET api/sessions
