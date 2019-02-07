@@ -149,7 +149,6 @@ namespace sess_api
             return sdata;
         }
 
-
         public bool SessionExists(string app, string sessionHash, bool renew = true)
         {
             var key = app + ":" + sessionHash;
@@ -159,6 +158,16 @@ namespace sess_api
             {
                 redisDb.KeyExpire(key, TimeSpan.FromSeconds(DefaultTtl));
             }
+
+            return resp;
+        }
+
+        public bool SessionDelete(string app, string sessionHash)
+        {
+            var resp = false;
+
+            var key = app + ":" + sessionHash;
+            resp = redisDb.KeyDelete(key);
 
             return resp;
         }
