@@ -8,11 +8,12 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Authentication;
 using sess_api.Tools;
+using Microsoft.OpenApi.Models;
+using NJsonSchema;
+using NSwag.AspNetCore;
 
 namespace sess_api
 {
@@ -41,6 +42,11 @@ namespace sess_api
             services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, Security.BasicAuthenticationHandler>("BasicAuthentication", null);
 
+
+            // Register the Swagger services
+            services.AddSwaggerDocument();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +64,13 @@ namespace sess_api
             //app.UseHttpsRedirection();
             
             app.UseAuthentication();
-            
+
+            app.UseSwagger();
+
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseSwagger();
+            app.UseSwaggerUi3();
+
             app.UseMvc();
         }
     }
