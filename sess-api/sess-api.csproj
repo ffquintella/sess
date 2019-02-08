@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="logs" />
         <Folder Include="wwwroot\" />
     </ItemGroup>
 
@@ -35,5 +36,9 @@
       <Content Update="security.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="logs\internal-nlog.txt" />
     </ItemGroup>
 </Project>
