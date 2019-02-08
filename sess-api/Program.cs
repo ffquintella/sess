@@ -23,7 +23,9 @@ namespace sess_api
             if (string.IsNullOrEmpty(hostUrl))
                 hostUrl = "http://0.0.0.0:5000";
             
-            CreateWebHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args)
+                .UseUrls(hostUrl)
+                .Build().Run();
 
         }
 
