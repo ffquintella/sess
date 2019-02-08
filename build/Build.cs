@@ -8,13 +8,16 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
+using Nuke.Docker;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Docker.DockerBuildSettings;
+using static Nuke.Docker.DockerTasks;
 using System.IO;
 
-[CheckBuildProjectConfigurations]
+//[CheckBuildProjectConfigurations]
 class Build : NukeBuild
 {
 
@@ -43,7 +46,8 @@ class Build : NukeBuild
         .Executes(() =>
         {
             EnsureExistingDirectory(TestsDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
+            DeleteDirectories(GlobDirectories(TestsDirectory, "**/bin", "**/obj"));
+            //TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             EnsureCleanDirectory(ArtifactsDirectory);
         });
 
@@ -94,5 +98,20 @@ class Build : NukeBuild
                 sw.WriteLine(GitVersion.GetNormalizedFileVersion());
             }
             
+        });
+    Target Create_Docker_Image => _ => _
+        .DependsOn(Local_Publish)
+        .Executes(() =>
+        {
+            //Logger.Info("Creating Docker Image...");
+
+            DockerBuild(s => s
+                .AddLabel(Title)
+                .SetTag("ffquintella/sess:" + GitVersion.GetNormalizedFileVersion())
+                .SetFile(DockerFile)
+                .SetForceRm(true)
+                .SetPath(RootDirectory)
+            );
+
         });
 }
