@@ -23,5 +23,5 @@ exec {'Pre Run CMD':
 # Starting adrapi
 exec {'Starting SESS':
   path  => '/bin:/sbin:/usr/bin:/usr/sbin',
-  command => "echo \"Starting SESS Server ...\"; cd /app;  dotnet sess.dll --hosturl http://0.0.0.0:5000 &",
+  command => "echo \"Starting SESS Server ...\"; cd /app;  dotnet sess-api.dll --hosturl http://0.0.0.0:5000 &",
 }

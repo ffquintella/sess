@@ -14,7 +14,17 @@ namespace sess_api
     {
         public static void Main(string[] args)
         {
+            
+            var configuration = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .Build();
+            
+            var hostUrl = configuration["hosturl"];
+            if (string.IsNullOrEmpty(hostUrl))
+                hostUrl = "http://0.0.0.0:5000";
+            
             CreateWebHostBuilder(args).Build().Run();
+
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
