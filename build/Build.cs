@@ -42,7 +42,8 @@ class Build : NukeBuild
         .Before(Restore)
         .Executes(() =>
         {
-            //TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
+            EnsureExistingDirectory(TestsDirectory);
+            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             EnsureCleanDirectory(ArtifactsDirectory);
         });
 
