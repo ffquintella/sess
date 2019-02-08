@@ -28,13 +28,10 @@ namespace sess_api.Controllers
             {
                 case "about":
                     return "Session Controller API";
-                    break;
                 case "author":
                     return "Felipe Quintella";
-                    break;
                 default:
                     return "Value invalid";
-                    break;
             }
         }
 

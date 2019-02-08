@@ -88,7 +88,7 @@ namespace sess_api
             else val = "";
 
             int ttl = DefaultTtl;
-            if (request.Timeout != 0 && request.Timeout != null) ttl = request.Timeout;
+            if (request.Timeout != 0) ttl = request.Timeout;
 
             redisDb.StringSet(rkey,val, TimeSpan.FromSeconds(ttl));
 
