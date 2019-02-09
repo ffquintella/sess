@@ -1,4 +1,4 @@
-FROM ffquintella/docker-aspnetcore:2.2.1
+FROM ffquintella/docker-aspnetcore:runtime-2.2.3
 
 MAINTAINER Felipe Quintella 
 

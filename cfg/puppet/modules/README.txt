@@ -1,0 +1,1 @@
+This folder is intended to store puppet modules that are required to build or start the image.
