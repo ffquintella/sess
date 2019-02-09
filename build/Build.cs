@@ -114,4 +114,14 @@ class Build : NukeBuild
             );
 
         });
+
+   Target Deploy_Docker_Image => _ => _
+    .DependsOn(Create_Docker_Image)
+    .Executes(() =>
+    {
+        DockerPush(s => s
+            .SetWorkingDirectory(RootDirectory)
+            .SetName("ffquintella/sess:" + GitVersion.GetNormalizedFileVersion())
+        );
+    });
 }
