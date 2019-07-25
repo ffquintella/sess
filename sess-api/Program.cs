@@ -8,6 +8,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace sess_api
 {
@@ -16,16 +17,44 @@ namespace sess_api
         public static void Main(string[] args)
         {
             
+#if DEBUG
             var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.Development.json", optional: false)
+                .AddCommandLine(args)
+                .Build(); 
+#else
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
                 .AddCommandLine(args)
                 .Build();
+#endif
+            
+            // NLog: setup the logger first to catch all errors
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            try
+            {
+                logger.Debug("init main");
+                CreateWebHostBuilder(args, configuration)
+                    .Build().Run();
+            }
+            catch (Exception ex)
+            {
+                //NLog: catch setup errors
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            }
             
             /*var hostUrl = configuration["hosturl"];
             if (string.IsNullOrEmpty(hostUrl))
                 hostUrl = "http://0.0.0.0:5000";*/
             
-            CreateWebHostBuilder(args, configuration)
-                .Build().Run();
+            //CreateWebHostBuilder(args, configuration)
+            //    .Build().Run();
             //.UseUrls(hostUrl)
 
         }
@@ -48,7 +77,13 @@ namespace sess_api
                             listenOptions.UseHttps(certificateFile, certificatePassword);
                         } );
                     }
-                )
+                )                
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                })
+                .UseNLog()
                 .UseStartup<Startup>();
         }
     }
