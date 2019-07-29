@@ -129,7 +129,7 @@ namespace sess_api
             return tokens.ToArray();
         }
 
-        public SessionData FindToken(string app, string sessionHash)
+        public SessionData FindToken(string app, string sessionHash, bool renew = true, int ttl = -1)
         {
             SessionData sdata = null;
 
@@ -139,6 +139,18 @@ namespace sess_api
                             
             var keyValue = redisDb.StringGet(key);
 
+            if (renew)
+            {
+                if (ttl == -1)
+                {
+                    redisDb.KeyExpire(key, TimeSpan.FromSeconds(DefaultTtl));
+                }
+                else
+                {
+                    redisDb.KeyExpire(key, TimeSpan.FromSeconds(ttl));
+                }
+            }
+            
             if(!keyValue.IsNull)
             {
                 sdata = new SessionData();
@@ -146,18 +158,26 @@ namespace sess_api
                 sdata.Data = keyValue.ToString();
                 sdata.Ttl = (int)redisDb.KeyTimeToLive(key).Value.TotalSeconds;
             }
+            
 
             return sdata;
         }
 
-        public bool SessionExists(string app, string sessionHash, bool renew = true)
+        public bool SessionExists(string app, string sessionHash, bool renew = true, int ttl = -1)
         {
             var key = app + ":" + sessionHash;
             var resp = redisDb.KeyExists(key);
 
             if (renew)
             {
-                redisDb.KeyExpire(key, TimeSpan.FromSeconds(DefaultTtl));
+                if (ttl == -1)
+                {
+                    redisDb.KeyExpire(key, TimeSpan.FromSeconds(DefaultTtl));
+                }
+                else
+                {
+                    redisDb.KeyExpire(key, TimeSpan.FromSeconds(ttl));
+                }
             }
 
             return resp;
