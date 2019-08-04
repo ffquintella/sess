@@ -2,7 +2,7 @@ FROM ffquintella/docker-aspnetcore:runtime-2.2.4
 
 MAINTAINER Felipe Quintella 
 
-LABEL version="1.1.2"
+LABEL version="1.1.6"
 LABEL description="This image contains the sess api."
 
 
@@ -24,8 +24,9 @@ RUN  mkdir -p /opt/scripts
 COPY cfg/puppet/manifests /etc/puppet/manifests/
 COPY cfg/puppet/modules /etc/puppet/modules/
 COPY start-service.sh /opt/scripts/start-service.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint
 #RUN chmod +x /opt/scripts/start-service.sh ; ln -s /opt/scripts/start-service.sh /usr/local/bin/start-service  
-RUN chmod +x /opt/scripts/start-service.sh ; ln -s /opt/scripts/start-service.sh /usr/local/bin/start-service ;\
+RUN chmod +x /opt/scripts/start-service.sh ; chmod +x /usr/local/bin/entrypoint ; ln -s /opt/scripts/start-service.sh /usr/local/bin/start-service ;\
  /opt/puppetlabs/puppet/bin/puppet apply  --modulepath=/etc/puppet/modules /etc/puppet/manifests/base.pp  ;\
  yum clean all ; rm -rf /tmp/* ; rm -rf /var/cache/* ; rm -rf /var/tmp/* ; rm -rf /var/opt/staging
 
@@ -42,4 +43,4 @@ WORKDIR /app
 #VOLUME  XXX
 
 #CMD /opt/puppetlabs/puppet/bin/puppet apply -l /tmp/puppet.log  --modulepath=/etc/puppet/modules /etc/puppet/manifests/start.pp
-CMD ["cd /app; /usr/bin/dotnet /app/sess-api.dll"]
+CMD /bin/bash /usr/local/bin/entrypoint
