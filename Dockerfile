@@ -42,4 +42,4 @@ WORKDIR /app
 #VOLUME  XXX
 
 #CMD /opt/puppetlabs/puppet/bin/puppet apply -l /tmp/puppet.log  --modulepath=/etc/puppet/modules /etc/puppet/manifests/start.pp
-CMD ["/usr/local/bin/start-service"]
+CMD ["/usr/bin/dotnet sess-api.dll"]
