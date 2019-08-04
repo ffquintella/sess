@@ -65,11 +65,11 @@ namespace sess_api
             
             app.UseAuthentication();
 
-            app.UseSwagger();
+            app.UseOpenApi();
 
             // Register the Swagger generator and the Swagger UI middlewares
-            app.UseSwagger();
-            app.UseSwaggerUi3();
+            //app.UseSwagger();
+            //app.UseSwaggerUi3();
             
             app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
