@@ -2,7 +2,7 @@ FROM ffquintella/docker-aspnetcore:runtime-2.2.4
 
 MAINTAINER Felipe Quintella 
 
-LABEL version="1.0.2"
+LABEL version="1.1.2"
 LABEL description="This image contains the sess api."
 
 
